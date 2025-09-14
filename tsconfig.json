@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "baseUrl": "./src",
+        "outDir": "./build",
+        "rootDir": "./src",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "moduleResolution": "node",
+        "paths": {
+            "@/*": ["*"],
+            "@modules/*": ["modules/*"]
+        },
+        "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules", "build"],
+    "ts-node": {
+        // "require": ["tsconfig-paths/register"]
+    },
+    "files": ["src/types/custom.d.ts"]
+}
