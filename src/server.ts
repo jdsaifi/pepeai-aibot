@@ -81,7 +81,8 @@ async function runServer() {
 }
 
 if (cluster.isPrimary) {
-    const noCPU: number = config.env == 'development' ? 1 : os.cpus().length;
+    // const noCPU: number = config.env == 'development' ? 1 : os.cpus().length;
+    const noCPU: number = 2;
     for (let i = 0; i < noCPU; i++) {
         cluster.fork();
     }
