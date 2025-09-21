@@ -10,6 +10,7 @@ export async function connectRabbitMQ() {
         return { connection, channel };
     }
     try {
+        console.log('Connecting to RabbitMQ... to url:', config.rabbitmq.url);
         connection = await amqp.connect(config.rabbitmq.url);
         channel = await connection.createChannel();
         if (!connection || !channel) {
