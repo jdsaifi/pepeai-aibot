@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "build": "tsc",
-        "start": "node -r ./tsconfig-paths-bootstrap.js build/index.js",
+        "start": "node -r ./tsconfig-paths-bootstrap.js build/server.js",
         "start:consumers": "node -r ./tsconfig-paths-bootstrap.js build/startConsumers.js",
         "dev": "nodemon --watch src --exec ts-node src/server.ts",
         "dev:bot": "nodemon --watch src --exec ts-node src/bot.ts",
