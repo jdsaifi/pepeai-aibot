@@ -60,11 +60,16 @@ async function runServer() {
                 //     console.error(err);
                 // });
 
-                app.use(
-                    await bot.createWebhook({
-                        domain: config.telegramWebhookDomain,
-                    })
-                );
+                const tgWebhook = await bot.telegram.getWebhookInfo();
+
+                if (!tgWebhook.url) {
+                    app.use(
+                        await bot.createWebhook({
+                            domain: config.telegramWebhookDomain,
+                        })
+                    );
+                }
+
                 // bot.on('text', (ctx) => ctx.reply('Hello'));
 
                 // run rabbitmq consumer
