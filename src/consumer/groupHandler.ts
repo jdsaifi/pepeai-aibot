@@ -21,6 +21,7 @@ const upsertGroup = async (message: ConsumeMessage) => {
         groupId: group.id,
         groupName: group.title,
         groupType: group.type,
+        addedBy: user ? user.id : null,
     };
     const groupService = GroupService.getInstance();
     await groupService.createGroup(input);

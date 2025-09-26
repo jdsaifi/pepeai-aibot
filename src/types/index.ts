@@ -66,7 +66,7 @@ export interface CreateGroupInput {
     groupDescription?: string;
     groupPhotoUrl?: string;
     groupType: 'group' | 'supergroup';
-    addedBy?: number | null; // User ID of the admin who added the group
+    addedBy: number | null; // User ID of the admin who added the group
     groupBotUsername?: string; // Username of the bot in the group
     groupBotToken?: string;
     AIPersona?: string; // Persona of the bot in the group
