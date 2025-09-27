@@ -16,6 +16,10 @@ const increaseGroupMessageCount = async (message: ConsumeMessage) => {
         return;
     }
 
+    if ('left_chat_member' in update.message) {
+        return; // skip if user left the group
+    }
+
     const { chat: group } = update.message;
     const groupService = GroupService.getInstance();
     groupService.incrementMessageCount(group?.id);
@@ -29,6 +33,10 @@ const updateMemberCount = async (message: ConsumeMessage) => {
             content: message.content.toString(),
         });
         return;
+    }
+
+    if ('left_chat_member' in update.message) {
+        return; // skip if user left the group
     }
 
     const { chat: group } = update.message;
@@ -46,6 +54,10 @@ const insertMessage = async (message: ConsumeMessage) => {
             content: message.content.toString(),
         });
         return;
+    }
+
+    if ('left_chat_member' in update.message) {
+        return; // skip if user left the group
     }
 
     const { chat: group, from: user } = update.message;
