@@ -66,6 +66,7 @@ async function runServer() {
                     app.use(
                         await bot.createWebhook({
                             domain: config.telegramWebhookDomain,
+                            path: config.telegramWebhookUrl,
                         })
                     );
                 }
