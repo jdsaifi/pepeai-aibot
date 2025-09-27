@@ -14,17 +14,37 @@ const upsertGroup = async (message: ConsumeMessage) => {
         return;
     }
 
-    const { chat: group, from: user } = update.message;
+    if ('my_chat_member' in update) {
+        // handle bot being added to group
+        if (update.my_chat_member.new_chat_member.status === 'administrator') {
+            // bot was added to group
+            Logger.info({
+                event: 'Bot added to group',
+                chat: update.my_chat_member.chat,
+            });
+            const { chat: group, from: user } = update.my_chat_member;
+            const input = {
+                groupId: group.id,
+                groupName: group.title,
+                groupType: group.type,
+                addedBy: user ? user.id : null,
+            };
+            const groupService = GroupService.getInstance();
+            await groupService.createGroup(input);
+        }
+    }
 
-    // console.log('upsertGroup called with update: ', update);
-    const input = {
-        groupId: group.id,
-        groupName: group.title,
-        groupType: group.type,
-        addedBy: user ? user.id : null,
-    };
-    const groupService = GroupService.getInstance();
-    await groupService.createGroup(input);
+    // const { chat: group, from: user } = update.message;
+
+    // // console.log('upsertGroup called with update: ', update);
+    // const input = {
+    //     groupId: group.id,
+    //     groupName: group.title,
+    //     groupType: group.type,
+    //     addedBy: user ? user.id : null,
+    // };
+    // const groupService = GroupService.getInstance();
+    // await groupService.createGroup(input);
 };
 
 async function consumeGroupHandler() {
