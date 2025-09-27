@@ -48,9 +48,9 @@ async function consumeGroupHandler() {
                     event: 'Received message at (consumeGroupHandler)',
                     content: msg.content.toString(),
                 });
+                channel.ack(msg);
                 upsertGroup(msg);
                 Logger.info('\n');
-                channel.ack(msg);
             }
         },
         { noAck: false }
