@@ -26,6 +26,17 @@ export default class GroupService {
         return groups;
     }
 
+    public async getGroupByTelegramId(
+        groupId: string | number
+    ): Promise<IGroup | null> {
+        // Logic to get a group by ID
+        const condition = {
+            groupId: groupId?.toString(),
+        };
+
+        return GroupModel.findOne(condition);
+    }
+
     public async getGroupById(
         userId: number,
         groupId: string | number

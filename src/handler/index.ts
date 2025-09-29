@@ -1,3 +1,4 @@
+import { consoleLog } from '@/utils/consoleLog';
 import config from '../config';
 import { getRabbitMQChannel } from '../library/rabbitmq';
 import { Logger } from '../utils/logger';
@@ -12,7 +13,7 @@ export const telegramWebhookHandler = async (req: Request, res: Response) => {
     const message = req.body;
     Logger.info({
         event: 'Telegram Webhook Received',
-        message,
+        data: message,
     });
 
     try {

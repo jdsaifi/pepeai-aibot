@@ -72,7 +72,7 @@ const getAiResponse = async (
         });
 
         const response: any = await openai.chat.completions.create({
-            model: 'google/gemini-flash-1.5',
+            model: 'x-ai/grok-4-fast:free',
             messages: [
                 {
                     role: 'user',
@@ -95,7 +95,8 @@ const getAiResponse = async (
 
         return jsonResponse['airesponse'];
     } catch (error) {
-        console.error('Error generating ai response:', error);
+        console.error('\n\nError generating ai response:');
+        consoleLog.error(error);
         throw new Error('Failed to generate ai response');
     }
 };

@@ -3,6 +3,8 @@ import { getRabbitMQChannel } from '../library/rabbitmq';
 import config from '../config';
 import GroupService from '../services/groupService';
 import { ConsumeMessage } from 'amqplib';
+import { consoleLog } from '@/utils/consoleLog';
+import bot from '@/bot';
 
 const upsertGroup = async (message: ConsumeMessage) => {
     const update = JSON.parse(message.content.toString());
@@ -14,6 +16,8 @@ const upsertGroup = async (message: ConsumeMessage) => {
         return;
     }
 
+    consoleLog.log('Update received in consumeGroupHandler:', update);
+    const groupService = GroupService.getInstance();
     if ('my_chat_member' in update) {
         // handle bot being added to group
         if (update.my_chat_member.new_chat_member.status === 'administrator') {
@@ -29,22 +33,34 @@ const upsertGroup = async (message: ConsumeMessage) => {
                 groupType: group.type,
                 addedBy: user ? user.id : null,
             };
-            const groupService = GroupService.getInstance();
+
+            await groupService.createGroup(input);
+        }
+    } else {
+        const groupInfo = await groupService.getGroupByTelegramId(
+            update.message.chat.id
+        );
+
+        if (!groupInfo) {
+            const admins = await bot.telegram.getChatAdministrators(
+                update.message.chat.id
+            );
+
+            const creator = admins.find((admin) => admin.status === 'creator');
+            consoleLog.log('creator:', creator);
+
+            const { chat: group } = update.message;
+
+            const input = {
+                groupId: group.id,
+                groupName: group.title,
+                groupType: group.type,
+                addedBy: creator?.user ? creator?.user?.id : null,
+            };
+
             await groupService.createGroup(input);
         }
     }
-
-    // const { chat: group, from: user } = update.message;
-
-    // // console.log('upsertGroup called with update: ', update);
-    // const input = {
-    //     groupId: group.id,
-    //     groupName: group.title,
-    //     groupType: group.type,
-    //     addedBy: user ? user.id : null,
-    // };
-    // const groupService = GroupService.getInstance();
-    // await groupService.createGroup(input);
 };
 
 async function consumeGroupHandler() {
@@ -68,9 +84,10 @@ async function consumeGroupHandler() {
                     event: 'Received message at (consumeGroupHandler)',
                     content: msg.content.toString(),
                 });
-                channel.ack(msg);
+
                 upsertGroup(msg);
                 Logger.info('\n');
+                channel.ack(msg);
             }
         },
         { noAck: false }
