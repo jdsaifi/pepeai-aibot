@@ -60,60 +60,76 @@ import bot from '@/bot';
 //     },
 // };
 
+// handle new_chat_member event
+const handleNewChatMember = async (update: any) => {
+    consoleLog.log('\nNew chat member event:');
+
+    const groupService = GroupService.getInstance();
+
+    // handle bot being added to group
+    const { new_chat_member } = update.my_chat_member;
+    if (
+        new_chat_member.status === 'administrator' &&
+        new_chat_member?.user?.username === config.tgBotUsername
+    ) {
+        // bot was added to group
+        Logger.info({
+            event: 'Bot added to group',
+            chat: update.my_chat_member.chat,
+        });
+        const { chat: group, from: user } = update.my_chat_member;
+        const input = {
+            groupId: group.id,
+            groupName: group.title,
+            groupType: group.type,
+            addedBy: user ? user.id : null,
+        };
+
+        await groupService.createGroup(input);
+    }
+};
+
 const upsertGroup = async (message: ConsumeMessage) => {
     const update = JSON.parse(message.content.toString());
-    if (!update.message || !update.message.chat || !update.my_chat_member) {
+
+    if ('my_chat_member' in update) {
+        await handleNewChatMember(update);
+    } else if (update.message && update.message.chat) {
+    } else {
+        Logger.error('\n');
         Logger.error({
             event: 'Invalid message format in consumeGroupHandler',
-            content: message.content.toString(),
+            content: update,
         });
         return;
     }
+    // if (!update.message || !update.message.chat || !update.my_chat_member) {
 
-    consoleLog.log('Update received in consumeGroupHandler:', update);
-    const groupService = GroupService.getInstance();
-    if ('my_chat_member' in update) {
-        // handle bot being added to group
-        const { new_chat_member } = update.my_chat_member;
-        if (
-            new_chat_member.status === 'administrator' &&
-            new_chat_member?.user?.username === config.tgBotUsername
-        ) {
-            // bot was added to group
-            Logger.info({
-                event: 'Bot added to group',
-                chat: update.my_chat_member.chat,
-            });
-            const { chat: group, from: user } = update.my_chat_member;
-            const input = {
-                groupId: group.id,
-                groupName: group.title,
-                groupType: group.type,
-                addedBy: user ? user.id : null,
-            };
+    // }
 
-            await groupService.createGroup(input);
-        }
-    } else {
-        // const groupInfo = await groupService.getGroupByTelegramId(
-        //     update.message.chat.id
-        // );
-        // if (!groupInfo) {
-        //     const admins = await bot.telegram.getChatAdministrators(
-        //         update.message.chat.id
-        //     );
-        //     const creator = admins.find((admin) => admin.status === 'creator');
-        //     consoleLog.log('creator:', creator);
-        //     const { chat: group } = update.message;
-        //     const input = {
-        //         groupId: group.id,
-        //         groupName: group.title,
-        //         groupType: group.type,
-        //         addedBy: creator?.user ? creator?.user?.id : null,
-        //     };
-        //     await groupService.createGroup(input);
-        // }
-    }
+    // consoleLog.log('Update received in consumeGroupHandler:', update);
+
+    // if ('my_chat_member' in update) {
+    // } else {
+    // const groupInfo = await groupService.getGroupByTelegramId(
+    //     update.message.chat.id
+    // );
+    // if (!groupInfo) {
+    //     const admins = await bot.telegram.getChatAdministrators(
+    //         update.message.chat.id
+    //     );
+    //     const creator = admins.find((admin) => admin.status === 'creator');
+    //     consoleLog.log('creator:', creator);
+    //     const { chat: group } = update.message;
+    //     const input = {
+    //         groupId: group.id,
+    //         groupName: group.title,
+    //         groupType: group.type,
+    //         addedBy: creator?.user ? creator?.user?.id : null,
+    //     };
+    //     await groupService.createGroup(input);
+    // }
+    //}
 };
 
 // {
