@@ -20,7 +20,11 @@ const upsertGroup = async (message: ConsumeMessage) => {
     const groupService = GroupService.getInstance();
     if ('my_chat_member' in update) {
         // handle bot being added to group
-        if (update.my_chat_member.new_chat_member.status === 'administrator') {
+        const { new_chat_member } = update.my_chat_member;
+        if (
+            new_chat_member.status === 'administrator' &&
+            new_chat_member?.user?.username === config.tgBotUsername
+        ) {
             // bot was added to group
             Logger.info({
                 event: 'Bot added to group',
@@ -37,29 +41,24 @@ const upsertGroup = async (message: ConsumeMessage) => {
             await groupService.createGroup(input);
         }
     } else {
-        const groupInfo = await groupService.getGroupByTelegramId(
-            update.message.chat.id
-        );
-
-        if (!groupInfo) {
-            const admins = await bot.telegram.getChatAdministrators(
-                update.message.chat.id
-            );
-
-            const creator = admins.find((admin) => admin.status === 'creator');
-            consoleLog.log('creator:', creator);
-
-            const { chat: group } = update.message;
-
-            const input = {
-                groupId: group.id,
-                groupName: group.title,
-                groupType: group.type,
-                addedBy: creator?.user ? creator?.user?.id : null,
-            };
-
-            await groupService.createGroup(input);
-        }
+        // const groupInfo = await groupService.getGroupByTelegramId(
+        //     update.message.chat.id
+        // );
+        // if (!groupInfo) {
+        //     const admins = await bot.telegram.getChatAdministrators(
+        //         update.message.chat.id
+        //     );
+        //     const creator = admins.find((admin) => admin.status === 'creator');
+        //     consoleLog.log('creator:', creator);
+        //     const { chat: group } = update.message;
+        //     const input = {
+        //         groupId: group.id,
+        //         groupName: group.title,
+        //         groupType: group.type,
+        //         addedBy: creator?.user ? creator?.user?.id : null,
+        //     };
+        //     await groupService.createGroup(input);
+        // }
     }
 };
 

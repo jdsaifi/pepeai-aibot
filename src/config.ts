@@ -14,7 +14,7 @@ const config = {
     mongoUri: process.env.DB_URL || 'mongodb://localhost:27017',
     mongoDbName: process.env.DB_NAME || 'pepeai_agent',
     tgBotToken: process.env.TG_BOT_TOKEN || null,
-    tgBotUsername: process.env.TG_BOT_USERNAME || 'SafuShieldTestBot',
+    tgBotUsername: process.env.TG_BOT_USERNAME || '',
     tgBotName: process.env.TG_BOT_NAME || 'Safu Shield Test Bot',
     enable_logs: process.env.ENABLE_DEBUG_LOGS || false,
     telegramWebhookUrl:
